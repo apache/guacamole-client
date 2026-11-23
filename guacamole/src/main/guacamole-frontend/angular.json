@@ -1,0 +1,304 @@
+{
+	"$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+	"version": 1,
+	"newProjectRoot": "projects",
+	"projects": {
+		"guacamole-frontend": {
+			"projectType": "application",
+			"schematics": {},
+			"root": "projects/guacamole-frontend",
+			"sourceRoot": "projects/guacamole-frontend/src",
+			"prefix": "guac",
+			"architect": {
+				"build": {
+					"builder": "@angular-architects/native-federation:build",
+					"options": {
+						"entryPoints": [
+							"projects/guacamole-frontend/src/main.ts"
+						],
+						"projectName": "guacamole-frontend",
+						"tsConfig": "projects/guacamole-frontend/tsconfig.federation.json"
+					},
+					"configurations": {
+						"production": {
+							"target": "guacamole-frontend:esbuild:production"
+						},
+						"development": {
+							"target": "guacamole-frontend:esbuild:development",
+							"dev": true
+						}
+					},
+					"defaultConfiguration": "production"
+				},
+				"serve": {
+					"builder": "@angular-architects/native-federation:build",
+					"options": {
+						"target": "guacamole-frontend:serve-original:development",
+						"rebuildDelay": 0,
+						"dev": true,
+						"port": 0,
+						"entryPoints": [
+							"projects/guacamole-frontend/src/main.ts"
+						],
+						"projectName": "guacamole-frontend",
+						"tsConfig": "projects/guacamole-frontend/tsconfig.federation.json"
+					}
+				},
+				"test": {
+					"builder": "@angular/build:unit-test",
+					"options": {
+						"buildTarget": "guacamole-frontend:esbuild:development,testing",
+						"tsConfig": "projects/guacamole-frontend/tsconfig.spec.json",
+						"setupFiles": [
+							"projects/guacamole-frontend/src/test-setup.ts"
+						]
+					}
+				},
+				"lint": {
+					"builder": "@angular-eslint/builder:lint",
+					"options": {
+						"lintFilePatterns": [
+							"projects/guacamole-frontend/**/*.ts",
+							"projects/guacamole-frontend/**/*.html"
+						]
+					}
+				},
+				"esbuild": {
+					"builder": "@angular/build:application",
+					"options": {
+						"outputPath": {
+							"base": "dist/guacamole-frontend",
+							"browser": ""
+						},
+						"index": "projects/guacamole-frontend/src/index.html",
+						"polyfills": [
+							"zone.js",
+							"es-module-shims"
+						],
+						"tsConfig": "projects/guacamole-frontend/tsconfig.app.json",
+						"assets": [
+							{
+								"glob": "**/*",
+								"input": "projects/guacamole-frontend/src/images",
+								"output": "images"
+							},
+							{
+								"glob": "**/*",
+								"input": "projects/guacamole-frontend/src/fonts",
+								"output": "fonts"
+							},
+							{
+								"glob": "**/*.json",
+								"input": "projects/guacamole-frontend/src/translations",
+								"output": "translations"
+							},
+							"projects/guacamole-frontend/src/manifest.json",
+							{
+								"glob": "**/*.json",
+								"input": "dist/guacamole-frontend-lib/assets/layouts",
+								"output": "layouts"
+							}
+						],
+						"styles": [
+							"projects/guacamole-frontend/src/styles.css",
+							"dist/guacamole-frontend-lib/assets/styles/element/styles/resize-sensor.css",
+							"dist/guacamole-frontend-lib/assets/styles/osk/styles/osk.css"
+						],
+						"scripts": [
+							"dist/guacamole-frontend-lib/assets/guacamole-common-js/all.min.js"
+						],
+						"browser": "projects/guacamole-frontend/src/main.ts",
+						"allowedCommonJsDependencies": [
+							"lodash",
+							"jquery",
+							"fuzzysort",
+							"@simonwep/pickr",
+							"angular-expressions",
+							"file-saver"
+						]
+					},
+					"configurations": {
+						"production": {
+							"budgets": [
+								{
+									"type": "initial",
+									"maximumWarning": "1.5mb",
+									"maximumError": "2mb"
+								},
+								{
+									"type": "anyComponentStyle",
+									"maximumWarning": "2kb",
+									"maximumError": "9kb"
+								}
+							],
+							"outputHashing": "all",
+							"extractLicenses": false,
+							"statsJson": true,
+							"externalDependencies": [
+								"images/*",
+								"fonts/*"
+							]
+						},
+						"development": {
+							"optimization": false,
+							"extractLicenses": false,
+							"sourceMap": true,
+							"namedChunks": true,
+							"externalDependencies": [
+								"images/*",
+								"fonts/*"
+							]
+						},
+						"testing": {
+							"aot": false
+						},
+						"serve": {
+							"assets": [
+								{
+									"glob": "**/*",
+									"input": "projects/guacamole-frontend/src/images",
+									"output": "images"
+								},
+								{
+									"glob": "**/*",
+									"input": "projects/guacamole-frontend/src/fonts",
+									"output": "fonts"
+								},
+								"projects/guacamole-frontend/src/manifest.json",
+								{
+									"glob": "**/*.json",
+									"input": "dist/guacamole-frontend-lib/assets/layouts",
+									"output": "layouts"
+								}
+							]
+						}
+					},
+					"defaultConfiguration": "production"
+				},
+				"serve-original": {
+					"builder": "@angular/build:dev-server",
+					"configurations": {
+						"production": {
+							"buildTarget": "guacamole-frontend:esbuild:production,serve"
+						},
+						"development": {
+							"buildTarget": "guacamole-frontend:esbuild:development,serve"
+						}
+					},
+					"defaultConfiguration": "development",
+					"options": {
+						"port": 4200,
+						"proxyConfig": "projects/guacamole-frontend/src/proxy.conf.json"
+					}
+				}
+			}
+		},
+		"guacamole-frontend-lib": {
+			"projectType": "library",
+			"root": "projects/guacamole-frontend-lib",
+			"sourceRoot": "projects/guacamole-frontend-lib/src",
+			"prefix": "guac",
+			"architect": {
+				"build": {
+					"builder": "@angular/build:ng-packagr",
+					"options": {
+						"project": "projects/guacamole-frontend-lib/ng-package.json"
+					},
+					"configurations": {
+						"production": {
+							"tsConfig": "projects/guacamole-frontend-lib/tsconfig.lib.prod.json"
+						},
+						"development": {
+							"tsConfig": "projects/guacamole-frontend-lib/tsconfig.lib.json"
+						}
+					},
+					"defaultConfiguration": "production"
+				},
+				"test": {
+					"builder": "@angular/build:unit-test",
+					"options": {
+						"tsConfig": "projects/guacamole-frontend-lib/tsconfig.spec.json",
+						"setupFiles": [
+							"projects/guacamole-frontend-lib/src/test-setup.ts"
+						]
+					}
+				},
+				"lint": {
+					"builder": "@angular-eslint/builder:lint",
+					"options": {
+						"lintFilePatterns": [
+							"projects/guacamole-frontend-lib/**/*.ts",
+							"projects/guacamole-frontend-lib/**/*.html"
+						],
+						"eslintConfig": "projects/guacamole-frontend-lib/eslint.config.js"
+					}
+				}
+			}
+		},
+		"guacamole-frontend-ext-lib": {
+			"projectType": "library",
+			"root": "projects/guacamole-frontend-ext-lib",
+			"sourceRoot": "projects/guacamole-frontend-ext-lib/src",
+			"prefix": "guac",
+			"architect": {
+				"build": {
+					"builder": "@angular/build:ng-packagr",
+					"options": {
+						"project": "projects/guacamole-frontend-ext-lib/ng-package.json"
+					},
+					"configurations": {
+						"production": {
+							"tsConfig": "projects/guacamole-frontend-ext-lib/tsconfig.lib.prod.json"
+						},
+						"development": {
+							"tsConfig": "projects/guacamole-frontend-ext-lib/tsconfig.lib.json"
+						}
+					},
+					"defaultConfiguration": "production"
+				},
+				"lint": {
+					"builder": "@angular-eslint/builder:lint",
+					"options": {
+						"lintFilePatterns": [
+							"projects/guacamole-frontend-ext-lib/**/*.ts",
+							"projects/guacamole-frontend-ext-lib/**/*.html"
+						],
+						"eslintConfig": "projects/guacamole-frontend-ext-lib/eslint.config.js"
+					}
+				}
+			}
+		}
+	},
+	"cli": {
+		"analytics": false,
+		"schematicCollections": [
+			"@angular-eslint/schematics"
+		]
+	},
+	"schematics": {
+		"@schematics/angular:component": {
+			"type": "component"
+		},
+		"@schematics/angular:directive": {
+			"type": "directive"
+		},
+		"@schematics/angular:service": {
+			"type": "service"
+		},
+		"@schematics/angular:guard": {
+			"typeSeparator": "."
+		},
+		"@schematics/angular:interceptor": {
+			"typeSeparator": "."
+		},
+		"@schematics/angular:module": {
+			"typeSeparator": "."
+		},
+		"@schematics/angular:pipe": {
+			"typeSeparator": "."
+		},
+		"@schematics/angular:resolver": {
+			"typeSeparator": "."
+		}
+	}
+}

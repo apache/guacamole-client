@@ -1,2 +1,2 @@
-src/main/frontend/dist/**/*
+src/main/guacamole-frontend/projects/guacamole-frontend-lib/src/assets/guacamole-common-js/all.min.js
 src/main/resources/META-INF/services/*

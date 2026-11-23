@@ -1,0 +1,44 @@
+{
+    "compileOnSave": false,
+    "exclude": [
+        "node_modules"
+    ],
+    "compilerOptions": {
+        "typeRoots": [
+            "node_modules/@types",
+            "typings"
+        ],
+        "outDir": "./dist/out-tsc",
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "esModuleInterop": true,
+        "noImplicitOverride": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "sourceMap": true,
+        "allowUmdGlobalAccess": true,
+        "paths": {
+            // Native federation shares this library with extensions as a mapping, which it cannot bundle from the built package
+            "guacamole-frontend-ext-lib": [
+                "./projects/guacamole-frontend-ext-lib/src/public-api.ts"
+            ],
+            "guacamole-frontend-lib": [
+                "./dist/guacamole-frontend-lib"
+            ]
+        },
+        "declaration": false,
+        "experimentalDecorators": true,
+        "moduleResolution": "bundler",
+        "importHelpers": true,
+        "target": "ES2022",
+        "module": "ES2022",
+        "useDefineForClassFields": false
+    },
+    "angularCompilerOptions": {
+        "enableI18nLegacyMessageIdFormat": false,
+        "strictInjectionParameters": true,
+        "strictInputAccessModifiers": true,
+        "strictTemplates": true
+    }
+}

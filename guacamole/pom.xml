@@ -58,13 +58,39 @@
     <build>
         <plugins>
 
-            <!-- Build AngularJS portion of application using NPM -->
+            <!-- Add files from guacamole-common-js -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-guacamole-js</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.guacamole</groupId>
+                                    <artifactId>guacamole-common-js</artifactId>
+                                    <type>zip</type>
+                                    <outputDirectory>src/main/guacamole-frontend/projects/guacamole-frontend-lib/src/assets</outputDirectory>
+                                    <includes>**/all.min.js</includes>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Build Angular portion of application using NPM -->
             <plugin>
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
-                <version>1.11.3</version>
+                <version>1.12.1</version>
                 <configuration>
-                    <workingDirectory>src/main/frontend</workingDirectory>
+                    <workingDirectory>src/main/guacamole-frontend</workingDirectory>
                     <installDirectory>${project.build.directory}</installDirectory>
                 </configuration>
                 <executions>
@@ -74,8 +100,8 @@
                             <goal>install-node-and-npm</goal>
                         </goals>
                         <configuration>
-                            <nodeVersion>v24.13.0</nodeVersion>
-                            <npmVersion>11.7.0</npmVersion>
+                            <nodeVersion>v24.22.3</nodeVersion>
+                            <npmVersion>11.19.1</npmVersion>
                         </configuration>
                     </execution>
                     <execution>
@@ -97,6 +123,16 @@
                             <arguments>run build</arguments>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>npm-test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>test</arguments>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
 
@@ -116,7 +152,7 @@
                             <outputDirectory>${dependency.list.directory}</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>src/main/frontend/dist</directory>
+                                    <directory>src/main/guacamole-frontend/dist/guacamole-frontend</directory>
                                     <includes>
                                         <include>npm-dependencies.txt</include>
                                     </includes>
@@ -149,22 +185,20 @@
 
                         <!-- Add frontend folder to war package ... -->
                         <resource>
-                            <directory>src/main/frontend/dist</directory>
+                            <directory>src/main/guacamole-frontend/dist/guacamole-frontend</directory>
                             <excludes>
                                 <exclude>translations/*.json</exclude>
                                 <exclude>index.html</exclude>
-                                <exclude>verifyCachedVersion.js</exclude>
                             </excludes>
                         </resource>
 
                         <!-- ... but filter index.html and translation strings -->
                         <resource>
-                            <directory>src/main/frontend/dist</directory>
+                            <directory>src/main/guacamole-frontend/dist/guacamole-frontend</directory>
                             <filtering>true</filtering>
                             <includes>
                                 <include>translations/*.json</include>
                                 <include>index.html</include>
-                                <include>verifyCachedVersion.js</include>
                             </includes>
                         </resource>
 
@@ -176,15 +210,6 @@
 
                     </webResources>
 
-                    <!-- Add files from guacamole-common-js -->
-                    <overlays>
-                        <overlay>
-                            <groupId>org.apache.guacamole</groupId>
-                            <artifactId>guacamole-common-js</artifactId>
-                            <type>zip</type>
-                        </overlay>
-                    </overlays>
-            
                 </configuration>
                 <executions>
                     <execution>

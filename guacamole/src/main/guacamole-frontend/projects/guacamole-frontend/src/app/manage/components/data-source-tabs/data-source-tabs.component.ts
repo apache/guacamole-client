@@ -1,0 +1,105 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
+import _ from 'lodash';
+import { canonicalize } from '../../../locale/service/translation.service';
+import { PageDefinition } from '../../../navigation/types/PageDefinition';
+import { ManagementPermissions } from '../../types/ManagementPermissions';
+
+/**
+ * Component which displays a set of tabs pointing to the same object within
+ * different data sources, such as user accounts which span multiple data
+ * sources.
+ */
+@Component({
+    // eslint-disable-next-line @angular-eslint/component-selector -- element name of the AngularJS directive
+    selector: 'data-source-tabs',
+    templateUrl: './data-source-tabs.component.html',
+    encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
+})
+export class DataSourceTabsComponent implements OnChanges {
+
+    /**
+     * The permissions which dictate the management actions available
+     * to the current user.
+     */
+    @Input() permissions: Record<string, ManagementPermissions> | null = null;
+
+    /**
+     * A function which returns the URL of the object within a given
+     * data source. The function receives the identifier of the relevant
+     * data source as its only argument. A method must be bound to its own
+     * component before it is passed, as this component invokes it.
+     */
+    @Input() url?: (dataSource: string) => string;
+
+    /**
+     * The set of pages which each manage the same object within different
+     * data sources.
+     */
+    pages: PageDefinition[] = [];
+
+    /**
+     * Keep pages synchronized with permissions: one page for each data source
+     * in which the object exists or can be created, marked as read-only,
+     * linked or unlinked.
+     */
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['permissions']) {
+            const permissions = changes['permissions'].currentValue as Record<string, ManagementPermissions>;
+
+            this.pages = [];
+
+            const dataSources = _.keys(this.permissions).sort();
+            dataSources.forEach(dataSource => {
+
+                // Determine whether data source contains this object
+                const managementPermissions = permissions[dataSource];
+                const exists = !!managementPermissions.identifier;
+
+                // Data source is not relevant if the associated object does not
+                // exist and cannot be created
+                const readOnly = !managementPermissions.canSaveObject;
+                if (!exists && readOnly)
+                    return;
+
+                // Determine class name based on read-only / linked status
+                let className;
+                if (readOnly) className = 'read-only';
+                else if (exists) className = 'linked';
+                else className = 'unlinked';
+
+                // Add page entry
+                this.pages!.push(new PageDefinition({
+                    name     : canonicalize('DATA_SOURCE_' + dataSource) + '.NAME',
+                    url      : this.url?.(dataSource) || '',
+                    className: className
+                }));
+
+            });
+
+        }
+
+    }
+
+
+}

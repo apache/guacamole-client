@@ -1,0 +1,376 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+/*
+ * NOTE: This session recording player implementation is based on the Session
+ * Recording Player for Glyptodon Enterprise which is available at
+ * https://github.com/glyptodon/glyptodon-enterprise-player under the
+ * following license:
+ *
+ * Copyright (C) 2019 Glyptodon, Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+import { Injectable } from '@angular/core';
+import _ from 'lodash';
+
+/**
+ * A set of all keysyms for which the name should be printed alongside the
+ * value of the key itself.
+ */
+const PRINT_NAME_TOO_KEYS: Record<number, boolean> = {
+    0xFF09: true, // Tab
+    0xFF0D: true, // Return
+    0xFF8D: true, // Enter
+};
+
+/**
+ * A set of all keysyms corresponding to keys commonly used in shortcuts.
+ */
+const SHORTCUT_KEYS: Record<number, boolean> = {
+    0xFFE3: true, // Left Control
+    0xFFE4: true, // Right Control,
+    0xFFE7: true, // Left Command (Mac)
+    0xFFE8: true, // Right Command (Mac)
+    0xFFE9: true, // Left Alt
+    0xFFEA: true, // Right Alt
+    0xFFEB: true, // Left Super
+    0xFFEC: true, // Right Super
+    0xFFED: true, // Left Option (Mac)
+    0xFFEE: true  // Right Option (Mac)
+};
+
+/**
+ * Format and return a key name for display.
+ *
+ * @param name
+ *     The name of the key
+ *
+ * @returns
+ *     The formatted key name.
+ */
+const formatKeyName = (name: string) => ('<' + name + '>');
+
+/**
+ * A batch of text associated with a recording. The batch consists of a
+ * string representation of the text that would be typed based on the key
+ * events in the recording, as well as a timestamp when the batch started.
+ */
+export class TextBatch {
+
+    /**
+     * All key events for this batch, some of which may be consolidated,
+     * representing multiple raw events.
+     */
+    events: ConsolidatedKeyEvent[];
+
+    /**
+     * The simplified, human-readable value representing the key events for
+     * this batch, equivalent to concatenating the `text` field of all key
+     * events in the batch.
+     */
+    simpleValue: string;
+
+    /**
+     * @param [template={}]
+     *     The object whose properties should be copied within the new TextBatch.
+     */
+    constructor(template: Partial<TextBatch> = {}) {
+
+        this.events = template?.events || [];
+        this.simpleValue = template.simpleValue || '';
+
+    }
+
+}
+
+/**
+ * A granular description of an extracted key event or sequence of events.
+ * It may contain multiple contiguous events of the same type, meaning that all
+ * event(s) that were combined into this event must have had the same `typed`
+ * field value. A single timestamp for the first combined event will be used
+ * for the whole batch if consolidated.
+ */
+class ConsolidatedKeyEvent {
+
+    /**
+     * A human-readable representation of the event(s). If a series of printable
+     * characters was directly typed, this will just be those character(s).
+     * Otherwise, it will be a string describing the event(s).
+     */
+    text: string;
+
+    /**
+     * True if this text of this event is exactly a typed character, or false
+     * otherwise.
+     */
+    typed: boolean;
+
+    /**
+     * The timestamp from the recording when this event occurred.
+     */
+    timestamp: number;
+
+    /**
+     * @param template
+     *     The object whose properties should be copied within the new KeyEventBatch.
+     */
+    constructor(template: ConsolidatedKeyEvent) {
+
+        this.text = template.text;
+        this.typed = template.typed;
+        this.timestamp = template.timestamp;
+
+    }
+
+}
+
+/**
+ * A service for translating parsed key events in the format produced by
+ * KeyEventInterpreter into display-optimized text batches.
+ */
+@Injectable({
+    providedIn: 'root'
+})
+export class KeyEventDisplayService {
+
+    /**
+     * Accepts key events and clipboard events, merging them chronologically
+     * into human-readable text batches, separated by at least `batchSeparation`
+     * milliseconds if provided.
+     *
+     * NOTE: The event processing logic and output format is based on the `guaclog`
+     * tool, with the addition of batching and clipboard support.
+     *
+     * @param [rawKeyEvents]
+     *     The raw key events to prepare for display.
+     *
+     * @param [clipboardEvents]
+     *     The clipboard events to merge inline with key events.
+     *
+     * @param [batchSeparation=5000]
+     *     The minimum number of milliseconds that must elapse between subsequent
+     *     batches of key-event-generated text. If 0 or negative, no splitting will
+     *     occur, resulting in a single batch for all provided events.
+     *
+     * @param [consolidateEvents=false]
+     *     Whether consecutive sequences of events with similar properties
+     *     should be consolidated into a single ConsolidatedKeyEvent object for
+     *     display performance reasons.
+     */
+    parseEventsWithClipboard(rawKeyEvents?: Guacamole.KeyEventInterpreter.KeyEvent[],
+                             clipboardEvents?: Guacamole.ClipboardEventInterpreter.ClipboardEvent[],
+                             batchSeparation = 5000, consolidateEvents = false): TextBatch[] {
+
+        // Default to 5 seconds if the batch separation was not provided
+        if (batchSeparation === undefined || batchSeparation === null)
+            batchSeparation = 5000;
+
+        // Convert clipboard events to unified format
+        const clipboardAsEvents = (clipboardEvents || []).map(event => ({
+            isClipboard: true,
+            timestamp: event.timestamp,
+            data: event.data
+        }));
+
+        // Merge and sort all events by timestamp
+        const allEvents = [...(rawKeyEvents || []), ...clipboardAsEvents]
+            .sort((a, b) => a.timestamp - b.timestamp);
+
+        /**
+         * A map of X11 keysyms to a KeyDefinition object, if the corresponding
+         * key is currently pressed. If a keysym has no entry in this map at all
+         * it means that the key is not being pressed. Note that not all keysyms
+         * are necessarily tracked within this map - only those that are
+         * explicitly tracked.
+         */
+        const pressedKeys: Record<number, Guacamole.KeyEventInterpreter.KeyDefinition> = {};
+
+        // The timestamp of the most recent event processed
+        let lastEventTime = 0;
+
+        // All text batches produced from the provided events
+        const batches = [new TextBatch()];
+
+        // Process every provided event
+        allEvents.forEach(event => {
+
+            const { timestamp } = event;
+
+            // Only switch to a new batch of text if sufficient time has passed
+            // since the last event
+            const newBatch = (batchSeparation >= 0
+                && (timestamp - lastEventTime) >= batchSeparation);
+            lastEventTime = timestamp;
+
+            if (newBatch)
+                batches.push(new TextBatch());
+
+            const currentBatch = batches[batches.length - 1];
+
+            /**
+             * Either push a new event constructed using the provided fields
+             * into the latest batch, or consolidate into the latest event as
+             * appropriate given the consolidation configuration and event type.
+             *
+             * @param text
+             *     The text representation of the event.
+             *
+             * @param typed
+             *     Whether the text value would be literally produced by typing
+             *     the key that produced the event.
+             */
+            const pushEvent = (text: string, typed: boolean) => {
+                const latestEvent = _.last(currentBatch.events);
+
+                // Only consolidate the event if configured to do so and it
+                // matches the type of the previous event
+                if (consolidateEvents && latestEvent && latestEvent.typed === typed) {
+                    latestEvent.text += text;
+                    currentBatch.simpleValue += text;
+                }
+
+                // Otherwise, push a new event
+                else {
+                    currentBatch.events.push(new ConsolidatedKeyEvent({
+                        text, typed, timestamp
+                    }));
+                    currentBatch.simpleValue += text;
+                }
+            };
+
+            // Handle clipboard events
+            if ('isClipboard' in event) {
+                const preview = (event.data || '').substring(0, 50);
+                pushEvent('[Clipboard: ' + preview + ']', false);
+            }
+
+            // Handle key events
+            else {
+
+                const { definition, pressed } = event;
+                const { keysym, name, value } = definition;
+
+                // Track modifier state
+                if (Guacamole.Keyboard.Keysym.isModifier(keysym)) {
+                    if (pressed)
+                        pressedKeys[keysym] = definition;
+                    else
+                        delete pressedKeys[keysym];
+                }
+
+                // Append to the current typed value when a printable
+                // (non-modifier) key is pressed
+                else if (pressed) {
+
+                    // If any shortcut keys are currently pressed
+                    if (_.some(pressedKeys, (def, key) => SHORTCUT_KEYS[Number(key)])) {
+
+                        let shortcutText = '<';
+
+                        let firstKey = true;
+
+                        // Compose entry by inspecting the state of each tracked key.
+                        // At least one key must be pressed when in a shortcut.
+                        for (const pressedKeyDefinition of Object.values(pressedKeys)) {
+
+                            // Print name of key
+                            if (firstKey) {
+                                shortcutText += pressedKeyDefinition.name;
+                                firstKey = false;
+                            } else
+                                shortcutText += ('+' + pressedKeyDefinition.name);
+
+                        }
+
+                        // Finally, append the printable key to close the shortcut
+                        shortcutText += ('+' + name + '>');
+
+                        // Add the shortcut to the current batch
+                        pushEvent(shortcutText, false);
+                    }
+
+                    // Print the key itself
+                    else {
+
+                        let keyText;
+                        let typed;
+
+                        // Print the value if explicitly defined
+                        if (value !== undefined) {
+
+                            keyText = value;
+                            typed = true;
+
+                            // If the name should be printed in addition, add it as a
+                            // separate event before the actual character value
+                            if (PRINT_NAME_TOO_KEYS[keysym])
+                                pushEvent(formatKeyName(name), false);
+
+                        }
+
+                        // Otherwise print the name
+                        else {
+
+                            keyText = formatKeyName(name);
+
+                            // While this is a representation for a single character,
+                            // the key text is the name of the key, not the actual
+                            // character itself
+                            typed = false;
+
+                        }
+
+                        // Add the key to the current batch
+                        pushEvent(keyText, typed);
+
+                    }
+                }
+
+                // We ignore key release events here because in practice characters
+                // are printed when you press keys not release them. The release order
+                // can be different and lead to wrong character printing order in the log.
+
+            }
+
+        });
+
+        // All processed batches with events
+        return batches.filter(batch => batch.events.length > 0);
+
+    }
+
+}

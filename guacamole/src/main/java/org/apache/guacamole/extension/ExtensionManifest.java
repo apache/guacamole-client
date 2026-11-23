@@ -105,6 +105,13 @@ public class ExtensionManifest {
     private String largeIcon;
 
     /**
+     * The path to the Native Federation configuration of this extension, if
+     * any. The configuration describes how the web application loads the
+     * Angular part of the extension.
+     */
+    private String nativeFederationConfiguration;
+
+    /**
      * Returns the version of the Guacamole web application for which the
      * extension was built, such as "0.9.7".
      *
@@ -428,6 +435,31 @@ public class ExtensionManifest {
      */
     public void setLargeIcon(String largeIcon) {
         this.largeIcon = largeIcon;
+    }
+
+    /**
+     * Returns the path to the Native Federation configuration of the
+     * extension, relative to the root of the extension .jar. It is defined
+     * within the manifest by the "nativeFederationConfiguration" property.
+     *
+     * @return
+     *     The path to the Native Federation configuration, or null if the
+     *     extension does not provide one.
+     */
+    public String getNativeFederationConfiguration() {
+        return nativeFederationConfiguration;
+    }
+
+    /**
+     * Sets the path to the Native Federation configuration of the extension,
+     * relative to the root of the extension .jar. It is defined within the
+     * manifest by the "nativeFederationConfiguration" property.
+     *
+     * @param nativeFederationConfiguration
+     *     The path to the Native Federation configuration.
+     */
+    public void setNativeFederationConfiguration(String nativeFederationConfiguration) {
+        this.nativeFederationConfiguration = nativeFederationConfiguration;
     }
 
 }

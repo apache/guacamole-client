@@ -1,0 +1,112 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+/* You can add global styles to this file, and also import other style files */
+
+@import "app/client/styles/client.css";
+@import "app/client/styles/connection-select-menu.css";
+@import "app/client/styles/connection-warning.css";
+@import "app/client/styles/display.css";
+@import "app/client/styles/file-browser.css";
+@import "app/client/styles/file-transfer-dialog.css";
+@import "app/client/styles/filesystem-menu.css";
+@import "app/client/styles/guac-menu.css";
+@import "app/client/styles/keyboard.css";
+@import "app/client/styles/menu.css";
+@import "app/client/styles/notification.css";
+@import "app/client/styles/share-menu.css";
+@import "app/client/styles/thumbnail-display.css";
+@import "app/client/styles/tiled-client-grid.css";
+@import "app/client/styles/transfer-manager.css";
+@import "app/client/styles/transfer.css";
+@import "app/client/styles/viewport.css";
+@import "app/client/styles/zoom.css";
+
+@import "app/clipboard/styles/clipboard.css";
+
+@import "app/form/styles/form-field.css";
+@import "app/form/styles/form.css";
+@import "app/form/styles/redirect-field.css";
+@import "app/form/styles/terminal-color-scheme-field.css";
+
+@import "app/home/styles/home.css";
+
+@import "app/import/styles/help.css";
+@import "app/import/styles/import.css";
+
+@import "app/index/styles/animation.css";
+@import "app/index/styles/automatic-login-rejected.css";
+@import "app/index/styles/buttons.css";
+@import "app/index/styles/cloak.css";
+@import "app/index/styles/fatal-page-error.css";
+@import "app/index/styles/font-carlito.css";
+@import "app/index/styles/headers.css";
+@import "app/index/styles/input.css";
+@import "app/index/styles/lists.css";
+@import "app/index/styles/loading.css";
+@import "app/index/styles/logged-out.css";
+@import "app/index/styles/other-connections.css";
+@import "app/index/styles/sorted-tables.css";
+@import "app/index/styles/status.css";
+@import "app/index/styles/ui.css";
+
+@import "app/list/styles/filter.css";
+@import "app/list/styles/pager.css";
+@import "app/list/styles/user-item.css";
+@import "app/login/styles/animation.css";
+@import "app/login/styles/dialog.css";
+@import "app/login/styles/input.css";
+@import "app/login/styles/login.css";
+
+@import "app/manage/styles/attributes.css";
+@import "app/manage/styles/connection-parameter.css";
+@import "app/manage/styles/forms.css";
+@import "app/manage/styles/locationChooser.css";
+@import "app/manage/styles/manage-user-group.css";
+@import "app/manage/styles/manage-user.css";
+@import "app/manage/styles/related-objects.css";
+
+@import "app/navigation/styles/menu.css";
+@import "app/navigation/styles/tabs.css";
+@import "app/navigation/styles/user-menu.css";
+
+@import "app/notification/styles/modal.css";
+@import "app/notification/styles/notification.css";
+
+@import "app/player/styles/player.css";
+@import "app/player/styles/playerDisplay.css";
+@import "app/player/styles/progressIndicator.css";
+@import "app/player/styles/seek.css";
+@import "app/player/styles/textView.css";
+
+@import "app/settings/styles/buttons.css";
+@import "app/settings/styles/connection-list.css";
+@import "app/settings/styles/history-player.css";
+@import "app/settings/styles/history.css";
+@import "app/settings/styles/input-method.css";
+@import "app/settings/styles/mouse-mode.css";
+@import "app/settings/styles/preferences.css";
+@import "app/settings/styles/sessions.css";
+@import "app/settings/styles/settings.css";
+@import "app/settings/styles/user-group-list.css";
+@import "app/settings/styles/user-list.css";
+
+@import "app/text-input/styles/textInput.css";
+
+@import '@simonwep/pickr/dist/themes/monolith.min.css';

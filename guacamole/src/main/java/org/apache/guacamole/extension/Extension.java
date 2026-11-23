@@ -128,6 +128,12 @@ public class Extension {
     private final Resource largeIcon;
 
     /**
+     * The resource for the Native Federation configuration of the extension,
+     * or null if the extension does not provide one.
+     */
+    private final Resource nativeFederationConfiguration;
+
+    /**
      * Returns a new map of all resources corresponding to the collection of
      * paths provided. Each resource will be associated with the given
      * mimetype, and stored in the map using its path as the key.
@@ -440,6 +446,12 @@ public class Extension {
             largeIcon = new ClassPathResource(classLoader, "image/png", manifest.getLargeIcon());
         else
             largeIcon = null;
+
+        // Get Native Federation configuration resource if provided
+        if (manifest.getNativeFederationConfiguration() != null)
+            nativeFederationConfiguration = new ClassPathResource(classLoader, "application/json", manifest.getNativeFederationConfiguration());
+        else
+            nativeFederationConfiguration = null;
     }
 
     /**
@@ -595,6 +607,20 @@ public class Extension {
      */
     public Resource getLargeIcon() {
         return largeIcon;
+    }
+
+    /**
+     * Returns the resource for the Native Federation configuration of the
+     * extension, which describes how the web application loads the Angular
+     * part of the extension. The Native Federation configuration is declared
+     * within the extension manifest.
+     *
+     * @return
+     *     The resource for the Native Federation configuration, or null if
+     *     the extension does not provide one.
+     */
+    public Resource getNativeFederationConfiguration() {
+        return nativeFederationConfiguration;
     }
 
 }

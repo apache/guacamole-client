@@ -1,0 +1,42 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+import { Component, Input, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
+import { GroupListItem } from '../../../group-list/types/GroupListItem';
+
+/**
+ * A component which displays a link to create a new connection in a specific
+ * location within the list of accessible connections and groups.
+ */
+@Component({
+    selector: 'guac-new-connection',
+    templateUrl: './new-connection.component.html',
+    encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
+})
+export class NewConnectionComponent {
+
+    /**
+     * The GroupListItem of type "new-connection", as provided by
+     * guac-group-list. Its wrapped item is the connection group in which the
+     * new connection is created.
+     */
+    @Input({ required: true }) item!: GroupListItem;
+}
