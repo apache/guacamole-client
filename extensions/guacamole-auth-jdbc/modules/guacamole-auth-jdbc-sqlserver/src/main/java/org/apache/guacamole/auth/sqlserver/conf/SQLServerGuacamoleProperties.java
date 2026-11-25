@@ -258,4 +258,41 @@ public class SQLServerGuacamoleProperties {
 
     };
 
+    /**
+     * The maximum number of database connections that may be in use at once.
+     * If not set, the MyBatis default of 10 is used.
+     */
+    public static final IntegerGuacamoleProperty SQLSERVER_POOL_MAX_ACTIVE =
+            new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "sqlserver-pool-max-active"; }
+
+    };
+
+    /**
+     * The maximum number of idle database connections kept open by the
+     * connection pool. If not set, the MyBatis default of 5 is used.
+     */
+    public static final IntegerGuacamoleProperty SQLSERVER_POOL_MAX_IDLE =
+            new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "sqlserver-pool-max-idle"; }
+
+    };
+
+    /**
+     * The number of milliseconds a pooled database connection must have been
+     * unused before it is tested with a ping prior to reuse. If not set, the
+     * MyBatis default of 0 is used. If 0, connections are tested on every use.
+     */
+    public static final IntegerGuacamoleProperty SQLSERVER_POOL_PING_NOT_USED_FOR =
+            new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "sqlserver-pool-ping-not-used-for"; }
+
+    };
+
 }

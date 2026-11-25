@@ -84,6 +84,22 @@ public class MySQLAuthenticationProviderModule implements Module {
         myBatisProperties.setProperty("mybatis.pooled.pingEnabled", "true");
         myBatisProperties.setProperty("mybatis.pooled.pingQuery", "SELECT 1");
 
+        // Override MyBatis connection pool defaults only where configured
+        Integer poolMaxActive = environment.getMySQLPoolMaxActive();
+        if (poolMaxActive != null)
+            myBatisProperties.setProperty("mybatis.pooled.maximumActiveConnections",
+                    poolMaxActive.toString());
+
+        Integer poolMaxIdle = environment.getMySQLPoolMaxIdle();
+        if (poolMaxIdle != null)
+            myBatisProperties.setProperty("mybatis.pooled.maximumIdleConnections",
+                    poolMaxIdle.toString());
+
+        Integer poolPingNotUsedFor = environment.getMySQLPoolPingNotUsedFor();
+        if (poolPingNotUsedFor != null)
+            myBatisProperties.setProperty("mybatis.pooled.pingConnectionsNotUsedFor",
+                    poolPingNotUsedFor.toString());
+
         // Set whether public key retrieval from the server is allowed
         driverProperties.setProperty("allowPublicKeyRetrieval",
             environment.getMYSQLAllowPublicKeyRetrieval() ? "true" : "false");

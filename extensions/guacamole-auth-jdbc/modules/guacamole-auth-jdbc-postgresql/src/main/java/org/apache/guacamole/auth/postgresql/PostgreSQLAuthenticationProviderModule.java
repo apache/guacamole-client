@@ -68,6 +68,22 @@ public class PostgreSQLAuthenticationProviderModule implements Module {
         myBatisProperties.setProperty("mybatis.pooled.pingEnabled", "true");
         myBatisProperties.setProperty("mybatis.pooled.pingQuery", "SELECT 1");
 
+        // Override MyBatis connection pool defaults only where configured
+        Integer poolMaxActive = environment.getPostgreSQLPoolMaxActive();
+        if (poolMaxActive != null)
+            myBatisProperties.setProperty("mybatis.pooled.maximumActiveConnections",
+                    poolMaxActive.toString());
+
+        Integer poolMaxIdle = environment.getPostgreSQLPoolMaxIdle();
+        if (poolMaxIdle != null)
+            myBatisProperties.setProperty("mybatis.pooled.maximumIdleConnections",
+                    poolMaxIdle.toString());
+
+        Integer poolPingNotUsedFor = environment.getPostgreSQLPoolPingNotUsedFor();
+        if (poolPingNotUsedFor != null)
+            myBatisProperties.setProperty("mybatis.pooled.pingConnectionsNotUsedFor",
+                    poolPingNotUsedFor.toString());
+
         // Only set if > 0. Underlying backend does not take 0 as not-set.
         int defaultStatementTimeout = environment.getPostgreSQLDefaultStatementTimeout();
         if (defaultStatementTimeout > 0) {
