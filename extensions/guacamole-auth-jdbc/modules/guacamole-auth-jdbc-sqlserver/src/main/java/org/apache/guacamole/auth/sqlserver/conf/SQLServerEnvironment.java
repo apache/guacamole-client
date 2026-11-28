@@ -329,4 +329,51 @@ public class SQLServerEnvironment extends JDBCEnvironment {
                 false);
     }
 
+    /**
+     * Returns the maximum number of database connections that may be in use at
+     * once, as configured by the "sqlserver-pool-max-active" property.
+     *
+     * @return
+     *     The configured value, or null if the MyBatis default (10)
+     *     should be used.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the property value.
+     */
+    public Integer getSQLServerPoolMaxActive() throws GuacamoleException {
+        return getProperty(SQLServerGuacamoleProperties.SQLSERVER_POOL_MAX_ACTIVE);
+    }
+
+    /**
+     * Returns the maximum number of idle database connections kept open by the
+     * connection pool, as configured by the "sqlserver-pool-max-idle"
+     * property.
+     *
+     * @return
+     *     The configured value, or null if the MyBatis default (5)
+     *     should be used.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the property value.
+     */
+    public Integer getSQLServerPoolMaxIdle() throws GuacamoleException {
+        return getProperty(SQLServerGuacamoleProperties.SQLSERVER_POOL_MAX_IDLE);
+    }
+
+    /**
+     * Returns the number of milliseconds a pooled database connection must
+     * have been unused before it is tested with a ping prior to reuse, as
+     * configured by the "sqlserver-pool-ping-not-used-for" property.
+     *
+     * @return
+     *     The configured value, or null if the MyBatis default (0)
+     *     should be used.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the property value.
+     */
+    public Integer getSQLServerPoolPingNotUsedFor() throws GuacamoleException {
+        return getProperty(SQLServerGuacamoleProperties.SQLSERVER_POOL_PING_NOT_USED_FOR);
+    }
+
 }

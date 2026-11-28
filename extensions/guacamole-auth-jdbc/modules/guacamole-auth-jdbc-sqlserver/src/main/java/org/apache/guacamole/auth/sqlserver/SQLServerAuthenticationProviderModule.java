@@ -82,6 +82,22 @@ public class SQLServerAuthenticationProviderModule implements Module {
         myBatisProperties.setProperty("mybatis.pooled.pingEnabled", "true");
         myBatisProperties.setProperty("mybatis.pooled.pingQuery", "SELECT 1");
 
+        // Override MyBatis connection pool defaults only where configured
+        Integer poolMaxActive = environment.getSQLServerPoolMaxActive();
+        if (poolMaxActive != null)
+            myBatisProperties.setProperty("mybatis.pooled.maximumActiveConnections",
+                    poolMaxActive.toString());
+
+        Integer poolMaxIdle = environment.getSQLServerPoolMaxIdle();
+        if (poolMaxIdle != null)
+            myBatisProperties.setProperty("mybatis.pooled.maximumIdleConnections",
+                    poolMaxIdle.toString());
+
+        Integer poolPingNotUsedFor = environment.getSQLServerPoolPingNotUsedFor();
+        if (poolPingNotUsedFor != null)
+            myBatisProperties.setProperty("mybatis.pooled.pingConnectionsNotUsedFor",
+                    poolPingNotUsedFor.toString());
+
         // Use UTF-8 in database
         driverProperties.setProperty("characterEncoding", "UTF-8");
 
