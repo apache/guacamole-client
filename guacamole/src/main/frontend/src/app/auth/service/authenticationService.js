@@ -90,6 +90,69 @@ angular.module('auth').factory('authenticationService', ['$injector',
      * @type String
      */
     var AUTH_TOKEN_STORAGE_KEY = 'GUAC_AUTH_TOKEN';
+    
+    /**
+     * Whether this tab has opted into independent authentication. The mode
+     * is retained across navigation and reloads within this tab.
+     */
+    var isolatedSession = false;
+    var isolatedToken = null;
+    var isolatedSessionKey = 'GUAC_ISOLATED_SESSION';
+    var initialSearch = new URLSearchParams(window.location.search);
+    var routeSearch = $injector.get('$location').search();
+    var requestedIsolation = initialSearch.get('guac-isolated-session') === 'true'
+            || routeSearch['guac-isolated-session'] === 'true';
+
+    try {
+        isolatedSession = requestedIsolation
+                || window.sessionStorage.getItem(isolatedSessionKey) === 'true';
+
+        if (isolatedSession) {
+            // An explicit launch URL must not reuse credentials copied from
+            // an opener. Do not revoke that token: another tab may own it.
+            if (initialSearch.get('guac-isolated-session') === 'true'
+                    || (requestedIsolation && !$injector.get('$location').path().replace(/^\/$/, '')))
+                window.sessionStorage.removeItem(AUTH_TOKEN_STORAGE_KEY);
+
+            window.sessionStorage.setItem(isolatedSessionKey, 'true');
+            isolatedToken = window.sessionStorage.getItem(AUTH_TOKEN_STORAGE_KEY);
+        }
+    }
+    catch (ignore) {
+        // Never fall back to shared credentials when isolation was requested.
+        isolatedSession = isolatedSession || requestedIsolation;
+    }
+
+    /**
+     * Authentication-only storage. If sessionStorage is unavailable, isolated
+     * tokens remain in memory for the lifetime of the current application.
+     */
+    var authTokenStorage = {
+        setItem: function setItem(key, value) {
+            if (!isolatedSession)
+                return localStorageService.setItem(key, value);
+
+            isolatedToken = value;
+            try {
+                window.sessionStorage.setItem(key, value);
+            }
+            catch (ignore) {}
+        },
+        getItem: function getItem(key) {
+            return isolatedSession ? isolatedToken : localStorageService.getItem(key);
+        },
+        removeItem: function removeItem(key) {
+            if (!isolatedSession)
+                return localStorageService.removeItem(key);
+
+            isolatedToken = null;
+            try {
+                window.sessionStorage.removeItem(key);
+            }
+            catch (ignore) {}
+        }
+    };
+
 
     /**
      * Retrieves the authentication result cached in memory. If the user has not
@@ -128,7 +191,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
         // attempt failed
         if (!data) {
             cachedResult = null;
-            localStorageService.removeItem(AUTH_TOKEN_STORAGE_KEY);
+            authTokenStorage.removeItem(AUTH_TOKEN_STORAGE_KEY));
         }
 
         // Otherwise, store the authentication attempt directly.
@@ -141,11 +204,11 @@ angular.module('auth').factory('authenticationService', ['$injector',
             // Always store in cache
             cachedResult = data;
 
-            // Persist only the auth token past tab/window closure, and only
+            // Persist only the auth token in the selected storage, and only
             // if not anonymous
             if (data.username !== AuthenticationResult.ANONYMOUS_USERNAME)
-                localStorageService.setItem(
-                        AUTH_TOKEN_STORAGE_KEY, data.authToken);
+                authTokenStorage.setItem(
+                        AUTH_TOKEN_STORAGE_KEY), data.authToken);
 
         }
 
@@ -305,6 +368,9 @@ angular.module('auth').factory('authenticationService', ['$injector',
         if (parameters)
             angular.extend(httpParameters, parameters);
 
+        // This option controls client-side storage only.
+        delete httpParameters['guac-isolated-session'];
+
         // Make the request
         return service.authenticate(httpParameters);
 
@@ -463,7 +529,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
             return authData.authToken;
 
         // Fall back to the value from local storage if not found in cache
-        return localStorageService.getItem(AUTH_TOKEN_STORAGE_KEY);
+        return authTokenStorage.getItem(AUTH_TOKEN_STORAGE_KEY));
 
     };
 
