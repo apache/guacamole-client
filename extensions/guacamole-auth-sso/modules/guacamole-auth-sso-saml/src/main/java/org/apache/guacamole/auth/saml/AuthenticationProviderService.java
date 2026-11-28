@@ -29,9 +29,10 @@ import org.apache.guacamole.auth.saml.user.SAMLAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.saml.acs.AssertedIdentity;
 import org.apache.guacamole.auth.saml.conf.ConfigurationService;
-import org.apache.guacamole.auth.saml.acs.SAMLAuthenticationSessionManager;
 import org.apache.guacamole.auth.saml.acs.SAMLService;
 import org.apache.guacamole.auth.sso.SSOAuthenticationProviderService;
+import org.apache.guacamole.auth.sso.SSOAuthenticationSession;
+import org.apache.guacamole.auth.sso.SSOAuthenticationSessionManager;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.form.RedirectField;
 import org.apache.guacamole.language.TranslatableMessage;
@@ -62,7 +63,7 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
      * Manager of active SAML authentication attempts.
      */
     @Inject
-    private SAMLAuthenticationSessionManager sessionManager;
+    private SSOAuthenticationSessionManager sessionManager;
 
     /**
      * Service for processing SAML requests/responses.
@@ -100,8 +101,15 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
             throws GuacamoleException {
 
         // Use established SAML identity if already provided by the SAML IdP
-        AssertedIdentity identity = sessionManager.getIdentity(
+        SSOAuthenticationSession session = sessionManager.resume(
                 getSessionIdentifier(credentials));
+        AssertedIdentity identity = null;
+        if (session != null) {
+            Object value = session.get("identity");
+            if (value instanceof AssertedIdentity)
+                // This should always be ok, so this is just paranoia
+                identity = (AssertedIdentity) value;
+        }
 
         if (identity != null) {
             SAMLAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();

@@ -21,6 +21,7 @@ package org.apache.guacamole.auth.ssl;
 
 import com.google.inject.Inject;
 import org.apache.guacamole.auth.sso.SSOAuthenticationEventListener;
+import org.apache.guacamole.auth.sso.SSOAuthenticationSessionManager;
 import org.apache.guacamole.net.auth.Credentials;
 
 /**
@@ -39,7 +40,7 @@ public class SSLAuthenticationEventListener extends SSOAuthenticationEventListen
      * be constructed by guice.
      */
     @Inject
-    protected static SSLAuthenticationSessionManager sessionManager;
+    protected static SSOAuthenticationSessionManager sessionManager;
 
     @Override
     protected String getSessionIdentifier(Credentials credentials) {

@@ -29,6 +29,8 @@ import org.apache.guacamole.auth.ssl.conf.ConfigurationService;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.auth.sso.SSOAuthenticationProviderService;
+import org.apache.guacamole.auth.sso.SSOAuthenticationSession;
+import org.apache.guacamole.auth.sso.SSOAuthenticationSessionManager;
 import org.apache.guacamole.auth.sso.user.SSOAuthenticatedUser;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.form.RedirectField;
@@ -59,7 +61,7 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
      * and complete the authentication process.
      */
     @Inject
-    private SSLAuthenticationSessionManager sessionManager;
+    private SSOAuthenticationSessionManager sessionManager;
 
     /**
      * Provider for AuthenticatedUser objects.
@@ -108,7 +110,11 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
     private SSOAuthenticatedUser processIdentity(Credentials credentials) {
 
         String state = getSessionIdentifier(credentials);
-        String username = sessionManager.getIdentity(state);
+        SSOAuthenticationSession session = sessionManager.resume(state);
+        if (session == null)
+            return null;
+
+        String username = session.getString("identity");
         if (username == null)
             return null;
 
