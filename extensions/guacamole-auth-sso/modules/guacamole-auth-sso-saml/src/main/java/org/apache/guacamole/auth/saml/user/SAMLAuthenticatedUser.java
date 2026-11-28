@@ -96,7 +96,11 @@ public class SAMLAuthenticatedUser extends SSOAuthenticatedUser {
     private Set<String> getGroups(AssertedIdentity identity)
             throws GuacamoleException {
 
-        List<String> samlGroups = identity.getAttributes().get(confService.getGroupAttribute());
+        String groupAttribute = identity.getGroupAttribute();
+        if (groupAttribute == null)
+            groupAttribute = confService.getGroupAttribute();
+
+        List<String> samlGroups = identity.getAttributes().get(groupAttribute);
         if (samlGroups == null || samlGroups.isEmpty())
             return Collections.emptySet();
 

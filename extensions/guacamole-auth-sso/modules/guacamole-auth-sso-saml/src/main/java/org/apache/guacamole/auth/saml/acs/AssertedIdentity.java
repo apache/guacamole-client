@@ -27,6 +27,7 @@ import java.util.Map;
 import javax.xml.xpath.XPathExpressionException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
+import org.apache.guacamole.auth.saml.conf.SAMLConfiguration;
 
 /**
  * Representation of a user's identity as asserted by a SAML IdP.
@@ -38,6 +39,19 @@ public class AssertedIdentity {
      * the user's identity.
      */
     private final SamlResponse response;
+
+    /**
+     * The unique identifier of the SAML identity provider that asserted this
+     * identity.
+     */
+    private final String identityProviderId;
+
+    /**
+     * The name of the SAML attribute containing group memberships for the
+     * identity provider that asserted this identity, or null if the default
+     * configured attribute should be used.
+     */
+    private final String groupAttribute;
 
     /**
      * The user's Guacamole username.
@@ -52,7 +66,7 @@ public class AssertedIdentity {
 
     /**
      * Creates a new AssertedIdentity representing the identity asserted by the
-     * SAML IdP in the given response.
+     * default SAML IdP in the given response.
      *
      * @param response
      *     The response received from the SAML IdP.
@@ -62,6 +76,29 @@ public class AssertedIdentity {
      *     information.
      */
     public AssertedIdentity(SamlResponse response) throws GuacamoleException {
+        this(response, SAMLConfiguration.DEFAULT_ID, null);
+    }
+
+    /**
+     * Creates a new AssertedIdentity representing the identity asserted by a
+     * specific SAML IdP in the given response.
+     *
+     * @param response
+     *     The response received from the SAML IdP.
+     *
+     * @param identityProviderId
+     *     The unique identifier of the SAML IdP that asserted this identity.
+     *
+     * @param groupAttribute
+     *     The name of the SAML attribute containing group memberships for this
+     *     IdP, or null if the default configured attribute should be used.
+     *
+     * @throws GuacamoleException
+     *     If the given SAML response cannot be parsed or is missing required
+     *     information.
+     */
+    public AssertedIdentity(SamlResponse response, String identityProviderId,
+            String groupAttribute) throws GuacamoleException {
 
         // Parse user identity from SAML response
         String nameId;
@@ -90,9 +127,34 @@ public class AssertedIdentity {
         }
 
         this.response = response;
+        this.identityProviderId = identityProviderId;
+        this.groupAttribute = groupAttribute;
         this.username = nameId.toLowerCase(); // Canonicalize username as lowercase
         this.attributes = responseAttributes;
 
+    }
+
+    /**
+     * Returns the unique identifier of the SAML identity provider that
+     * asserted this identity.
+     *
+     * @return
+     *     The unique identifier of the SAML identity provider.
+     */
+    public String getIdentityProviderId() {
+        return identityProviderId;
+    }
+
+    /**
+     * Returns the name of the SAML attribute containing group memberships for
+     * the identity provider that asserted this identity, or null if not
+     * explicitly recorded.
+     *
+     * @return
+     *     The name of the SAML group attribute, or null if not recorded.
+     */
+    public String getGroupAttribute() {
+        return groupAttribute;
     }
 
     /**

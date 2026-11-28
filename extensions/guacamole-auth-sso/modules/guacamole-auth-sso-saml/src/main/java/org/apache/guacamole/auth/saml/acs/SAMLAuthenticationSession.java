@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.auth.saml.acs;
 
+import org.apache.guacamole.auth.saml.conf.SAMLConfiguration;
 import org.apache.guacamole.net.auth.AuthenticationSession;
 
 /**
@@ -33,6 +34,12 @@ public class SAMLAuthenticationSession extends AuthenticationSession {
     private final String requestId;
 
     /**
+     * The unique identifier of the SAML identity provider associated with this
+     * authentication attempt.
+     */
+    private final String identityProviderId;
+
+    /**
      * The identity asserted by the SAML IdP, or null if authentication has not
      * yet completed successfully.
      */
@@ -40,7 +47,7 @@ public class SAMLAuthenticationSession extends AuthenticationSession {
 
     /**
      * Creates a new AuthenticationSession representing an in-progress SAML
-     * authentication attempt.
+     * authentication attempt against the default SAML identity provider.
      *
      * @param requestId
      *     The request ID of the SAML request associated with the
@@ -51,8 +58,30 @@ public class SAMLAuthenticationSession extends AuthenticationSession {
      *     be considered invalid.
      */
     public SAMLAuthenticationSession(String requestId, long expires) {
+        this(requestId, SAMLConfiguration.DEFAULT_ID, expires);
+    }
+
+    /**
+     * Creates a new AuthenticationSession representing an in-progress SAML
+     * authentication attempt against a specific SAML identity provider.
+     *
+     * @param requestId
+     *     The request ID of the SAML request associated with the
+     *     authentication attempt.
+     *
+     * @param identityProviderId
+     *     The unique identifier of the SAML identity provider to which the
+     *     authentication request was sent.
+     *
+     * @param expires
+     *     The number of milliseconds that may elapse before this session must
+     *     be considered invalid.
+     */
+    public SAMLAuthenticationSession(String requestId, String identityProviderId,
+            long expires) {
         super(expires);
         this.requestId = requestId;
+        this.identityProviderId = identityProviderId;
     }
 
     /**
@@ -77,6 +106,18 @@ public class SAMLAuthenticationSession extends AuthenticationSession {
      */
     public String getRequestID() {
         return requestId;
+    }
+
+    /**
+     * Returns the unique identifier of the SAML identity provider associated
+     * with this authentication attempt.
+     *
+     * @return
+     *     The unique identifier of the SAML identity provider associated with
+     *     this authentication attempt.
+     */
+    public String getIdentityProviderId() {
+        return identityProviderId;
     }
 
     /**

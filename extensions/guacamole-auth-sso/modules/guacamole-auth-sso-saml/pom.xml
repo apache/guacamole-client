@@ -58,11 +58,16 @@
 
                             <jsSourceFiles>
                                 <jsSourceFile>license.txt</jsSourceFile>
+                                <jsSourceFile>samlModule.js</jsSourceFile>
                             </jsSourceFiles>
 
                             <jsSourceIncludes>
                                 <jsSourceInclude>**/*.js</jsSourceInclude>
                             </jsSourceIncludes>
+
+                            <jsSourceExcludes>
+                                <jsSourceExclude>samlModule.js</jsSourceExclude>
+                            </jsSourceExcludes>
                             <jsEngine>CLOSURE</jsEngine>
 
                             <!-- Disable warnings for JSDoc annotations -->
@@ -100,6 +105,16 @@
         <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
+        </dependency>
+
+        <!-- Jackson and YAML support -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-yaml</artifactId>
         </dependency>
 
         <!-- Java servlet API -->
@@ -157,6 +172,23 @@
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
             <version>1.22.0</version>
+        </dependency>
+
+        <!-- JUnit -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>

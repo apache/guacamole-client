@@ -1,4 +1,7 @@
 <meta name="after-children" content=".login-ui .sso-provider-list">
-<li class="sso-provider sso-provider-saml"><a href="api/ext/saml/login">{{
-    'LOGIN.NAME_IDP_SAML' | translate
+<li class="sso-provider sso-provider-saml"
+    ng-repeat="provider in $root.guacSamlProviders track by provider.id"
+    data-idp-id="{{ provider.id }}"><a
+    ng-href="{{ provider.loginUrl }}">{{
+    provider.displayName || ('LOGIN.NAME_IDP_SAML' | translate)
 }}</a></li>
