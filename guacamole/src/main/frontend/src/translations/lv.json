@@ -1,0 +1,475 @@
+{
+    
+    "NAME" : "Latviešu",
+    
+    "APP" : {
+
+        "ACTION_CANCEL"             : "Atcelt",
+        "ACTION_CLEAR"              : "Notīrīt",
+        "ACTION_CLONE"              : "Dublēt",
+        "ACTION_CONTINUE"           : "Turpināt",
+        "ACTION_DELETE"             : "Dzēst",
+        "ACTION_DELETE_SESSIONS"    : "Pārtraukt sesijas",
+        "ACTION_DOWNLOAD"           : "Lejupielādēt",
+        "ACTION_IMPORT"             : "Importēt",
+        "ACTION_LOGIN"              : "Pieteikties",
+        "ACTION_LOGIN_AGAIN"        : "Pieteikties atkārtoti",
+        "ACTION_LOGOUT"             : "Izrakstīties",
+        "ACTION_MANAGE_CONNECTIONS" : "Savienojumi",
+        "ACTION_MANAGE_PREFERENCES" : "Lietotāja iestatījumi",
+        "ACTION_MANAGE_SETTINGS"    : "Iestatījumi",
+        "ACTION_MANAGE_SESSIONS"    : "Aktīvās sesijas",
+        "ACTION_MANAGE_USERS"       : "Lietotāji",
+        "ACTION_MANAGE_USER_GROUPS" : "Grupas",
+        "ACTION_NAVIGATE_BACK"      : "Atpakaļ",
+        "ACTION_NAVIGATE_HOME"      : "Sākums",
+        "ACTION_PAUSE"              : "Pauzēt",
+        "ACTION_PLAY"               : "Atskaņot",
+        "ACTION_SAVE"               : "Saglabāt",
+        "ACTION_SEARCH"             : "Meklēt",
+        "ACTION_SHARE"              : "Dalīties",
+        "ACTION_UPDATE_PASSWORD"    : "Atjaunot paroli",
+        "ACTION_VIEW_HISTORY"       : "Vēsture",
+        "ACTION_VIEW_RECORDING"     : "Apskatīt",
+
+        "DIALOG_HEADER_ERROR" : "Kļūda",
+
+        "ERROR_PAGE_UNAVAILABLE"  : "Ir notikusi kļūda, un šo darbību nevar pabeigt. Ja problēma atkārtojas, lūdzu, informējiet sistēmas administratoru vai pārbaudiet sistēmas žurnālus.",
+        "ERROR_PASSWORD_BLANK"    : "Parole nevar būt tukša.",
+        "ERROR_PASSWORD_MISMATCH" : "Ievadītās paroles nesakrīt.",
+        "ERROR_SINGLE_FILE_ONLY"  : "Lūdzu, augšupielādējiet tikai vienu failu vienlaikus.",
+        
+        "FIELD_HEADER_PASSWORD"       : "Parole:",
+        "FIELD_HEADER_PASSWORD_AGAIN" : "Atkārtoti ievadiet paroli:",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "Atļaut rakstīt esošajā ieraksta failā:",
+        "FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING" : "Atļaut rakstīt esošajā TypeScript failā:",
+
+        "FIELD_PLACEHOLDER_FILTER" : "Filtrs",
+
+        "INFO_ACTIVE_USER_COUNT" : "Pašlaik izmanto {USERS} {USERS, plural, one{lietotājs} other{lietotāji}}.",
+        "INFO_LOGGED_OUT"        : "Jūs esat izrakstījies no sistēmas.",
+
+        "TEXT_ANONYMOUS_USER"   : "Anonīms",
+        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{sekunde} other{sekundes}}} minute{{VALUE, plural, one{minūte} other{minūtes}}} hour{{VALUE, plural, one{stunda} other{stundas}}} day{{VALUE, plural, one{diena} other{dienas}}} other{}}"
+
+    },
+
+    "CLIENT" : {
+
+        "ACTION_DISCONNECT"                : "Atvienoties",
+        "ACTION_FULLSCREEN"                : "Pilnekrāna režīms",
+        "ACTION_RECONNECT"                 : "Pieslēgties atkārtoti",
+        "ACTION_SHOW_CLIPBOARD"            : "Klikšķiniet, lai apskatītu starpliktuvē esošo informāciju.",
+        "ACTION_UPLOAD_FILES"              : "Augšupielādēt failus",
+
+        "DIALOG_HEADER_CONNECTING"       : "Notiek pieslēgšanās",
+        "DIALOG_HEADER_CONNECTION_ERROR" : "Savienojuma kļūda",
+        "DIALOG_HEADER_DISCONNECTED"     : "Atvienots",
+
+        "ERROR_CLIENT_201"     : "Šis savienojums tika aizvērts, jo serveris ir aizņemts. Lūdzu, uzgaidiet dažas minūtes un mēģiniet vēlreiz.",
+        "ERROR_CLIENT_202"     : "Guacamole serveris aizvēra savienojumu, jo attālinātā darbvirsma pārāk ilgi neatbild. Lūdzu, mēģiniet vēlreiz vai sazinieties ar sistēmas administratoru.",
+        "ERROR_CLIENT_203"     : "Attālinātās darbvirsmas serveris saskārās ar kļūdu un aizvēra savienojumu. Lūdzu, mēģiniet vēlreiz vai sazinieties ar sistēmas administratoru.",
+        "ERROR_CLIENT_205"     : "Šim savienojumam ir nepieciešams resurss, kas pašlaik tiek izmantots, taču koplietošanas piekļuve šim resursam nav iespējama vai nav atļauta. Lūdzu, mēģiniet vēlāk.",
+        "ERROR_CLIENT_207"     : "Attālinātās darbvirsmas serveris pašlaik nav sasniedzams. Ja problēma saglabājas, lūdzu, informējiet sistēmas administratoru vai pārbaudiet sistēmas žurnālus.",
+        "ERROR_CLIENT_208"     : "Attālinātās darbvirsmas serveris pašlaik nav pieejams. Ja problēma saglabājas, lūdzu, informējiet sistēmas administratoru vai pārbaudiet sistēmas žurnālus.",
+        "ERROR_CLIENT_209"     : "Attālinātās darbvirsmas serveris aizvēra savienojumu, jo tas konfliktē ar citu savienojumu. Lūdzu, mēģiniet vēlāk.",
+        "ERROR_CLIENT_20A"     : "Attālinātās darbvirsmas serveris aizvēra savienojumu, jo tas šķita neaktīvs. Ja tas nav vēlams vai ir negaidīti, lūdzu, informējiet sistēmas administratoru vai pārbaudiet sistēmas iestatījumus.",
+        "ERROR_CLIENT_20B"     : "Attālinātās darbvirsmas serveris piespiedu kārtā aizvēra savienojumu. Ja tas nav vēlams vai ir negaidīti, lūdzu, informējiet sistēmas administratoru vai pārbaudiet sistēmas žurnālus.",
+        "ERROR_CLIENT_301"     : "Pieteikšanās neizdevās. Lūdzu, pieslēdzieties atkārtoti un mēģiniet vēlreiz.",
+        "ERROR_CLIENT_303"     : "Attālinātās darbvirsmas serveris liedza piekļuvi šim savienojumam. Ja jums nepieciešama piekļuve, lūdzu, lūdziet sistēmas administratoram piešķirt piekļuvi jūsu kontam vai pārbaudiet sistēmas iestatījumus.",
+        "ERROR_CLIENT_308"     : "Guacamole serveris aizvēra savienojumu, jo jūsu pārlūkprogramma pietiekami ilgi neatbildēja un šķita atvienota. To bieži izraisa tīkla problēmas, piemēram, vājš bezvadu signāls, vai vienkārši ļoti lēns tīkls. Lūdzu, pārbaudiet tīklu un mēģiniet vēlreiz.",
+        "ERROR_CLIENT_31D"     : "Guacamole serveris liedz piekļuvi šim savienojumam, jo esat sasniedzis vienlaicīgu savienojumu izmantošanas ierobežojumu vienam lietotājam. Lūdzu, aizveriet vienu vai vairākus savienojumus un mēģiniet vēlreiz.",
+        "ERROR_CLIENT_DEFAULT" : "Guacamole serverī ir notikusi iekšēja kļūda, un savienojums ir pārtraukts. Ja problēma saglabājas, lūdzu, informējiet sistēmas administratoru vai pārbaudiet sistēmas žurnālus.",
+
+        "ERROR_TUNNEL_201"     : "Guacamole serveris noraidīja šo savienojuma mēģinājumu, jo ir pārāk daudz aktīvu savienojumu. Lūdzu, uzgaidiet dažas minūtes un mēģiniet vēlreiz.",
+        "ERROR_TUNNEL_202"     : "Savienojums tika aizvērts, jo serveris pārāk ilgi neatbild. To parasti izraisa tīkla problēmas, piemēram, vājš bezvadu signāls vai lēns tīkls. Lūdzu, pārbaudiet tīkla savienojumu un mēģiniet vēlreiz vai sazinieties ar sistēmas administratoru.",
+        "ERROR_TUNNEL_203"     : "Serveris saskārās ar kļūdu un aizvēra savienojumu. Lūdzu, mēģiniet vēlreiz vai sazinieties ar sistēmas administratoru.",
+        "ERROR_TUNNEL_204"     : "Pieprasītais savienojums neeksistē. Lūdzu, pārbaudiet savienojuma nosaukumu un mēģiniet vēlreiz.",
+        "ERROR_TUNNEL_205"     : "Šis savienojums pašlaik tiek izmantots, un vienlaicīga piekļuve šim savienojumam nav atļauta. Lūdzu, mēģiniet vēlāk.",
+        "ERROR_TUNNEL_207"     : "Guacamole serveris pašlaik nav sasniedzams. Lūdzu, pārbaudiet tīklu un mēģiniet vēlreiz.",
+        "ERROR_TUNNEL_208"     : "Guacamole serveris pašlaik nepieņem savienojumus. Lūdzu, pārbaudiet tīklu un mēģiniet vēlreiz.",
+        "ERROR_TUNNEL_301"     : "Jums nav atļauju piekļūt šim savienojumam, jo neesat pieteicies. Lūdzu, piesakieties un mēģiniet vēlreiz.",
+        "ERROR_TUNNEL_303"     : "Jums nav atļauju piekļūt šim savienojumam. Ja jums nepieciešama piekļuve, lūdzu, palūdziet sistēmas administratoram pievienot jūs atļauto lietotāju sarakstam vai pārbaudiet sistēmas iestatījumus.",
+        "ERROR_TUNNEL_308"     : "Guacamole serveris aizvēra savienojumu, jo jūsu pārlūkprogramma pietiekami ilgi neatbildēja un šķita atvienota. To bieži izraisa tīkla problēmas, piemēram, vājš bezvadu signāls, vai vienkārši ļoti lēns tīkls. Lūdzu, pārbaudiet tīklu un mēģiniet vēlreiz.",
+        "ERROR_TUNNEL_31D"     : "Guacamole serveris liedz piekļuvi šim savienojumam, jo esat sasniedzis vienlaicīgu savienojumu izmantošanas ierobežojumu vienam lietotājam. Lūdzu, aizveriet vienu vai vairākus savienojumus un mēģiniet vēlreiz.",
+        "ERROR_TUNNEL_DEFAULT" : "Guacamole serverī ir notikusi iekšēja kļūda, un savienojums ir pārtraukts. Ja problēma saglabājas, lūdzu, informējiet sistēmas administratoru vai pārbaudiet sistēmas žurnālus.",
+
+        "ERROR_UPLOAD_100"     : "Failu pārsūtīšana netiek atbalstīta vai nav iespējota. Lūdzu, sazinieties ar sistēmas administratoru vai pārbaudiet sistēmas žurnālus.",
+        "ERROR_UPLOAD_201"     : "Pašlaik tiek pārsūtīts pārāk daudz failu. Lūdzu, pagaidiet, līdz esošie pārsūtījumi tiks pabeigti, un mēģiniet vēlreiz.",
+        "ERROR_UPLOAD_202"     : "Failu nevar pārsūtīt, jo attālinātās darbvirsmas serveris pārāk ilgi neatbild. Lūdzu, mēģiniet vēlreiz vai sazinieties ar sistēmas administratoru.",
+        "ERROR_UPLOAD_203"     : "Attālinātās darbvirsmas serveris pārsūtīšanas laikā saskārās ar kļūdu. Lūdzu, mēģiniet vēlreiz vai sazinieties ar sistēmas administratoru.",
+        "ERROR_UPLOAD_204"     : "Failu pārsūtīšanas mērķis neeksistē. Lūdzu, pārbaudiet, vai mērķis pastāv, un mēģiniet vēlreiz.",
+        "ERROR_UPLOAD_205"     : "Failu pārsūtīšanas mērķis pašlaik ir bloķēts. Lūdzu, pagaidiet, līdz tiks pabeigti esošie uzdevumi, un mēģiniet vēlreiz.",
+        "ERROR_UPLOAD_301"     : "Jums nav atļauju augšupielādēt šo failu, jo neesat pieteicies. Lūdzu, piesakieties un mēģiniet vēlreiz.",
+        "ERROR_UPLOAD_303"     : "Jums nav atļauju augšupielādēt šo failu. Ja jums nepieciešama piekļuve, lūdzu, pārbaudiet sistēmas iestatījumus vai sazinieties ar sistēmas administratoru.",
+        "ERROR_UPLOAD_308"     : "Failu pārsūtīšana ir apstājusies. To bieži izraisa tīkla problēmas, piemēram, vājš bezvadu signāls, vai vienkārši ļoti lēns tīkls. Lūdzu, pārbaudiet tīklu un mēģiniet vēlreiz.",
+        "ERROR_UPLOAD_31D"     : "Pašlaik tiek pārsūtīts pārāk daudz failu. Lūdzu, pagaidiet, līdz esošie pārsūtījumi tiks pabeigti, un mēģiniet vēlreiz.",
+        "ERROR_UPLOAD_DEFAULT" : "Guacamole serverī ir notikusi iekšēja kļūda, un savienojums ir pārtraukts. Ja problēma saglabājas, lūdzu, informējiet sistēmas administratoru vai pārbaudiet sistēmas žurnālus.",
+
+        "HELP_CLIPBOARD"           : "Guacamole ietvaros kopētais/izgrieztais teksts parādīsies šeit. Izmaiņas zemāk esošajā tekstā ietekmēs attālināto starpliktuvi.",
+        "HELP_INPUT_METHOD_NONE"   : "Netiek izmantota ievades metode. Tastatūras ievade tiek pieņemta no pieslēgtas fiziskas tastatūras.",
+        "HELP_INPUT_METHOD_OSK"    : "Rādīt un pieņemt ievadi no iebūvētās Guacamole ekrāna tastatūras. Ekrāna tastatūra ļauj ievadīt taustiņu kombinācijas, kas citādi varētu būt neiespējamas (piemēram, Ctrl-Alt-Del).",
+        "HELP_INPUT_METHOD_TEXT"   : "Atļaut ievadīt tekstu un emulēt tastatūras notikumus, balstoties uz ievadīto tekstu. Tas ir nepieciešams ierīcēm, piemēram, mobilajiem tālruņiem, kuriem nav fiziskas tastatūras.",
+        "HELP_MOUSE_MODE"          : "Nosaka, kā attālinātā pele uzvedas attiecībā pret pieskārieniem.",
+        "HELP_MOUSE_MODE_ABSOLUTE" : "Pieskarieties, lai klikšķinātu. Klikšķis notiek pieskāriena vietā.",
+        "HELP_MOUSE_MODE_RELATIVE" : "Velciet, lai pārvietotu peles rādītāju, un pieskarieties, lai klikšķinātu. Klikšķis notiek rādītāja atrašanās vietā.",
+        "HELP_SHARE_LINK"          : "Pašreizējais savienojums tiek koplietots, un tam var piekļūt ikviens, kam ir šādas {LINKS, plural, one{saiti} other{saites}}:",
+
+        "INFO_ANONYMOUS_USER_COUNT" : "Anonīms{COUNT, plural, one{} other{ (#)}}",
+        "INFO_CONNECTION_SHARED"    : "Šis savienojums tagad tiek koplietots.",
+        "INFO_NO_FILE_TRANSFERS"    : "Nav failu pārsūtījumu.",
+
+        "NAME_INPUT_METHOD_NONE"   : "Nav",
+        "NAME_INPUT_METHOD_OSK"    : "Ekrāna tastatūra",
+        "NAME_INPUT_METHOD_TEXT"   : "Teksta ievade",
+        "NAME_MOUSE_MODE_ABSOLUTE" : "Skārienekrāns",
+        "NAME_MOUSE_MODE_RELATIVE" : "Skārienpaliktnis",
+
+        "SECTION_HEADER_CLIENT_MESSAGES" : "Ziņas",
+        "SECTION_HEADER_CLIPBOARD"       : "Starpliktuve",
+        "SECTION_HEADER_DEVICES"         : "Ierīces",
+        "SECTION_HEADER_DISPLAY"         : "Displejs",
+        "SECTION_HEADER_FILE_TRANSFERS"  : "Failu pārsūtīšana",
+        "SECTION_HEADER_INPUT_METHOD"    : "Ievades metode",
+        
+        "SECTION_HEADER_MOUSE_MODE"     : "Peles emulācijas režīms",
+
+        "TEXT_ANONYMOUS_USER_JOINED"      : "Anonīms lietotājs pievienojās savienojumam.",
+        "TEXT_ANONYMOUS_USER_LEFT"        : "Anonīms lietotājs pameta savienojumu.",
+        "TEXT_ZOOM_AUTO_FIT"              : "Automātiski pielāgot pārlūkprogrammas logam",
+        "TEXT_CLIENT_STATUS_IDLE"         : "Dīkstāve.",
+        "TEXT_CLIENT_STATUS_CONNECTING"   : "Notiek pieslēgšanās...",
+        "TEXT_CLIENT_STATUS_DISCONNECTED" : "Savienojums ir pārtraukts.",
+        "TEXT_CLIENT_STATUS_UNSTABLE"     : "Tīkla savienojums ar Guacamole serveri šķiet nestabils.",
+        "TEXT_CLIENT_STATUS_WAITING"      : "Savienojas ar Guacamole. Gaida atbildi...",
+        "TEXT_USER_JOINED"                : "{USERNAME} pievienojās savienojumam.",
+        "TEXT_USER_LEFT"                  : "{USERNAME} pameta savienojumu.",
+        "TEXT_RECONNECT_COUNTDOWN"        : "Atkārtota pieslēgšanās pēc {REMAINING} {REMAINING, plural, one{sekundes} other{sekundēm}}..."
+
+    },
+
+    "COLOR_SCHEME" : {
+
+        "ACTION_HIDE_DETAILS" : "Slēpt",
+        "ACTION_SHOW_DETAILS" : "Rādīt",
+
+        "FIELD_HEADER_BACKGROUND" : "Fons",
+        "FIELD_HEADER_FOREGROUND" : "Priekšplāns",
+
+        "FIELD_OPTION_CUSTOM" : "Pielāgots...",
+
+        "SECTION_HEADER_DETAILS" : "Detaļas:"
+
+    },
+
+    "IMPORT": {
+
+        "ACTION_BROWSE"             : "Izvēlēties failu",
+        "ACTION_VIEW_FORMAT_HELP"   : "Skatīt formāta padomus",
+        "ACTION_IMPORT_CONNECTIONS" : "Importēt savienojumus",
+
+        "DIALOG_HEADER_SUCCESS" : "Veiksmīgi",
+
+        "ERROR_AMBIGUOUS_CSV_HEADER"         : "Neviennozīmīga CSV galvene \"{HEADER}\" — tā var būt gan savienojuma atribūts, gan parametrs",
+        "ERROR_AMBIGUOUS_PARENT_GROUP"       : "Gan group, gan parentIdentifier nevar būt norādīti vienlaikus",
+        "ERROR_ARRAY_REQUIRED"               : "Iesniegtajā failā jābūt savienojumu sarakstam",
+        "ERROR_DETECTED_INVALID_TYPE"        : "Neatbalstīts faila tips. Lūdzu, pārliecinieties, ka fails ir derīgs CSV, JSON vai YAML.",
+        "ERROR_DUPLICATE_CONNECTION_IN_FILE" : "Importēšanas failā ir dublēts savienojums \"{NAME}\" pie \"{PATH}\"",
+        "ERROR_DUPLICATE_CSV_HEADER"         : "Dublēta CSV galvene: {HEADER}",
+        "ERROR_EMPTY_FILE"                   : "Iesniegtais fails ir tukšs",
+        "ERROR_INVALID_CSV_HEADER"           : "Nederīga CSV galvene \"{HEADER}\" nav ne atribūts, ne parametrs",
+        "ERROR_INVALID_MIME_TYPE"            : "Neatbalstīts faila tips: \"{TYPE}\"",
+        "ERROR_INVALID_GROUP"                : "Nav atrasta grupa, kas atbilst \"{GROUP}\"",
+        "ERROR_INVALID_GROUP_IDENTIFIER"     : "Nav atrasta savienojumu grupa ar identifikatoru \"{IDENTIFIER}\"",
+        "ERROR_INVALID_GROUP_TYPE"           : "Nederīga grupa — tai jābūt virknei.",
+        "ERROR_INVALID_PROTOCOL"             : "Nederīgs protokols \"{PROTOCOL}\"",
+        "ERROR_INVALID_USER_GROUPS_TYPE"     : "Nederīgas lietotāju grupas — jābūt lietotāju grupu identifikatoru masīvam.",
+        "ERROR_INVALID_USERS_TYPE"           : "Nederīgi lietotāji — jābūt lietotāju identifikatoru masīvam.",
+        "ERROR_NO_FILE_SUPPLIED"             : "Lūdzu, izvēlieties failu importēšanai",
+        "ERROR_PARSE_FAILURE_CSV"            : "Lūdzu, pārliecinieties, ka fails ir derīgs CSV. Parsēšana neizdevās ar kļūdu \"{ERROR}\". ",
+        "ERROR_PARSE_FAILURE_JSON"           : "Lūdzu, pārliecinieties, ka fails ir derīgs JSON. Parsēšana neizdevās ar kļūdu \"{ERROR}\". ",
+        "ERROR_PARSE_FAILURE_YAML"           : "Lūdzu, pārliecinieties, ka fails ir derīgs YAML. Parsēšana neizdevās ar kļūdu \"{ERROR}\". ",
+        "ERROR_REJECT_UPDATE_CONNECTION"     : "Savienojums \"{NAME}\" jau pastāv pie \"{PATH}\"",
+        "ERROR_REQUIRED_NAME_CONNECTION"     : "Savienojuma nosaukums ir obligāts",
+        "ERROR_REQUIRED_PROTOCOL_CONNECTION" : "Savienojuma protokols ir obligāts",
+        "ERROR_REQUIRED_NAME_FILE"           : "Iesniegtajā failā netika atrasts savienojuma nosaukums",
+        "ERROR_REQUIRED_PROTOCOL_FILE"       : "Iesniegtajā failā netika atrasts savienojuma protokols",
+
+        "FIELD_HEADER_EXISTING_CONNECTION_MODE" : "Aizstāt/atjaunināt esošos savienojumus",
+        "FIELD_HEADER_EXISTING_PERMISSION_MODE" : "Atiestatīt atļaujas",
+
+        "HELP_CSV_DESCRIPTION"              : "Savienojumu importēšanas CSV failā katrā rindā ir viens savienojuma ieraksts. Katra kolonna norāda savienojuma lauku. Vismaz savienojuma nosaukumam un protokolam jābūt norādītiem.",
+        "HELP_CSV_MORE_DETAILS"             : "CSV galvene katrai rindai norāda savienojuma lauku. Savienojumu grupas ID, kurā savienojums jāimportē, var norādīt tieši ar \"parentIdentifier\", vai arī vecākgrupas ceļu var norādīt, izmantojot \"group\", kā parādīts zemāk. Vairumā gadījumu starp laukiem nevajadzētu būt konfliktiem, taču, ja nepieciešams, viennozīmībai var pievienot sufiksu \" (attribute)\" vai \" (parameter)\". Lietotāju vai lietotāju grupu identifikatoru sarakstiem jābūt atdalītiem ar semikoliem.¹",
+        "HELP_FILE_TYPE_DESCRIPTION"        : "Savienojumu importam tiek atbalstīti trīs failu tipi: CSV, JSON un YAML. Katrs faila tips var saturēt tos pašus datus. Obligāti jānorāda savienojuma nosaukums un protokols. Papildus var norādīt savienojumu grupas atrašanās vietu, lietotāju un/vai lietotāju grupu sarakstu piekļuves piešķiršanai, savienojuma parametrus vai savienojuma atribūtus. Visi lietotāji vai lietotāju grupas, kas nepastāv pašreizējā datu avotā, tiks automātiski izveidoti. Ņemiet vērā: esošās savienojuma atļaujas netiks noņemtas atjauninātiem savienojumiem, ja vien nav atzīmēts \"Atiestatīt atļaujas\".",
+        "HELP_FILE_TYPE_HEADER"             : "Failu tipi",
+        "HELP_JSON_DESCRIPTION"             : "Savienojumu importēšanas JSON fails ir savienojumu objektu saraksts. Vismaz savienojuma nosaukumam un protokolam jābūt norādītiem katrā savienojuma objektā.",
+        "HELP_JSON_MORE_DETAILS"            : "Savienojumu grupas ID, kurā savienojums jāimportē, var norādīt tieši laukā \"parentIdentifier\", vai arī vecākgrupas ceļu var norādīt laukā \"group\", kā parādīts zemāk. Katram savienojumam var norādīt lietotāju un lietotāju grupu identifikatoru masīvu piekļuves piešķiršanai.",
+        "HELP_EXISTING_CONNECTION_MODE"     : "Pilnībā aizstāt/atjaunināt esošos savienojumus, ja to nosaukumi un vecāksavienojumu grupas sakrīt ar vērtībām iesniegtajā failā. Ja nav atzīmēts, mēģinājums importēt savienojumu ar tādu pašu nosaukumu un vecāksavienojumu grupu kā esošam savienojumam tiks uzskatīts par kļūdu.",
+        "HELP_EXISTING_PERMISSION_MODE"     : "Pilnībā atiestatīt atļaujas visiem iesniegtajā failā esošajiem savienojumiem uz failā norādītajām atļaujām. Ja atļaujas nav norādītas, visas attiecīgās savienojumu atļaujas tiks atsauktas. Ja nav atzīmēts, esošās atļaujas tiek saglabātas, un failā norādītās atļaujas tiks pievienotas.",
+        "HELP_SEMICOLON_FOOTNOTE"           : "Ja nepieciešams, semikolus var aizbēgt ar atpakaļslīpsvītru, piem., \"first\\\\;last\"",
+        "HELP_UPLOAD_DROP_TITLE"            : "Ievelciet failu šeit",
+        "HELP_YAML_DESCRIPTION"             : "Savienojumu importēšanas YAML fails ir savienojumu objektu saraksts ar tieši tādu pašu struktūru kā JSON formātā.",
+
+        "INFO_CONNECTIONS_IMPORTED_SUCCESS" : "Veiksmīgi importēti {NUMBER} {NUMBER, plural, one{savienojums} other{savienojumi}}.",
+        
+        "SECTION_HEADER_CONNECTION_IMPORT"           : "Savienojumu imports",
+        "SECTION_HEADER_HELP_CONNECTION_IMPORT_FILE" : "Savienojumu importa faila formāts",
+        "SECTION_HEADER_CSV"                         : "CSV formāts",
+        "SECTION_HEADER_JSON"                        : "JSON formāts",
+        "SECTION_HEADER_YAML"                        : "YAML formāts",
+
+        "TABLE_HEADER_ERRORS"     : "Kļūdas",
+        "TABLE_HEADER_GROUP"      : "Grupa",
+        "TABLE_HEADER_NAME"       : "Nosaukums",
+        "TABLE_HEADER_PROTOCOL"   : "Protokols",
+        "TABLE_HEADER_ROW_NUMBER" : "Rinda #"
+    },
+
+    "DATA_SOURCE_DEFAULT" : {
+        "NAME" : "Noklusējuma (XML)"
+    },
+
+    "FORM" : {
+
+        "HELP_SHOW_PASSWORD" : "Klikšķiniet, lai parādītu paroli",
+        "HELP_HIDE_PASSWORD" : "Klikšķiniet, lai paslēptu paroli"
+
+    },
+
+    "HOME" : {
+
+        "INFO_NO_RECENT_CONNECTIONS" : "Nav nesenu savienojumu.",
+        
+        "PASSWORD_CHANGED" : "Parole nomainīta.",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"    : "Visi savienojumi",
+        "SECTION_HEADER_RECENT_CONNECTIONS" : "Nesenie savienojumi"
+
+    },
+
+    "LIST" : {
+
+        "TEXT_ANONYMOUS_USER" : "Anonīms"
+
+    },
+
+    "LOGIN": {
+
+        "ERROR_INVALID_LOGIN" : "Nederīgi pieteikšanās dati",
+
+        "FIELD_HEADER_USERNAME" : "Lietotājvārds",
+        "FIELD_HEADER_PASSWORD" : "Parole"
+
+    },
+
+    "MANAGE_CONNECTION" : {
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Dzēst savienojumu",
+
+        "FIELD_HEADER_LOCATION" : "Atrašanās vieta:",
+        "FIELD_HEADER_NAME"     : "Nosaukums:",
+        "FIELD_HEADER_PROTOCOL" : "Protokols:",
+
+        "INFO_CONNECTION_ACTIVE_NOW"       : "Aktīvs tagad",
+        "INFO_CONNECTION_NOT_USED"         : "Šis savienojums vēl nav izmantots.",
+
+        "SECTION_HEADER_EDIT_CONNECTION" : "Rediģēt savienojumu",
+        "SECTION_HEADER_HISTORY"         : "Lietošanas vēsture",
+        "SECTION_HEADER_PARAMETERS"      : "Parametri",
+
+        "TABLE_HEADER_HISTORY_USERNAME"   : "Lietotājvārds",
+        "TABLE_HEADER_HISTORY_START"      : "Sākuma laiks",
+        "TABLE_HEADER_HISTORY_DURATION"   : "Ilgums",
+        "TABLE_HEADER_HISTORY_REMOTEHOST" : "Attālinātais resursdators",
+
+        "TEXT_CONFIRM_DELETE"   : "Pēc dzēšanas savienojumus nevar atjaunot. Vai tiešām vēlaties dzēst šo savienojumu?"
+
+    },
+
+    "MANAGE_CONNECTION_GROUP" : {
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Dzēst savienojumu grupu",
+
+        "SECTION_HEADER_EDIT_CONNECTION_GROUP" : "Rediģēt savienojumu grupu"
+
+    },
+
+    "MANAGE_USER" : {
+
+        "FIELD_HEADER_ADMINISTER_SYSTEM"             : "Administrēt sistēmu:",
+        "FIELD_HEADER_AUDIT_SYSTEM"                  : "Auditēt sistēmu:",
+        "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "Mainīt savu paroli:",
+        "FIELD_HEADER_CREATE_NEW_USERS"              : "Izveidot jaunus lietotājus:",
+        "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "Izveidot jaunas lietotāju grupas:",
+        "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "Izveidot jaunus savienojumus:",
+        "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "Izveidot jaunas savienojumu grupas:",
+        "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "Izveidot jaunus koplietošanas profilus:",
+        "FIELD_HEADER_USER_DISABLED"                 : "Pieteikšanās atspējota:",
+        "FIELD_HEADER_USERNAME"                      : "Lietotājvārds:",
+
+        "HELP_NO_USER_GROUPS" : "Šis lietotājs pašlaik nepieder nevienai grupai. Atveriet šo sadaļu, lai pievienotu grupas.",
+
+        "INFO_READ_ONLY"                : "Diemžēl šo lietotāja kontu nevar rediģēt.",
+        "INFO_NO_USER_GROUPS_AVAILABLE" : "Nav pieejamu grupu.",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"     : "Visi savienojumi",
+        "SECTION_HEADER_CONNECTIONS"         : "Savienojumi",
+        "SECTION_HEADER_CURRENT_CONNECTIONS" : "Pašreizējie savienojumi",
+        "SECTION_HEADER_EDIT_USER"           : "Rediģēt lietotāju",
+        "SECTION_HEADER_PERMISSIONS"         : "Atļaujas",
+        "SECTION_HEADER_USER_GROUPS"         : "Grupas",
+
+        "TEXT_CONFIRM_DELETE" : "Pēc dzēšanas lietotājus nevar atjaunot. Vai tiešām vēlaties dzēst šo lietotāju?"
+
+    },
+
+    "MANAGE_USER_GROUP" : {
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Dzēst grupu",
+
+        "FIELD_HEADER_USER_GROUP_DISABLED"           : "Atspējota:",
+        "FIELD_HEADER_USER_GROUP_NAME"               : "Grupas nosaukums:",
+
+        "HELP_NO_USER_GROUPS"        : "Šī grupa pašlaik nepieder nevienai grupai. Atveriet šo sadaļu, lai pievienotu grupas.",
+        "HELP_NO_MEMBER_USER_GROUPS" : "Šajā grupā pašlaik nav nevienas grupas. Atveriet šo sadaļu, lai pievienotu grupas.",
+        "HELP_NO_MEMBER_USERS"       : "Šajā grupā pašlaik nav neviena lietotāja. Atveriet šo sadaļu, lai pievienotu lietotājus.",
+
+        "INFO_READ_ONLY"                : "Diemžēl šo grupu nevar rediģēt.",
+        "INFO_NO_USERS_AVAILABLE"       : "Nav pieejamu lietotāju.",
+
+        "SECTION_HEADER_EDIT_USER_GROUP"     : "Rediģēt grupu",
+        "SECTION_HEADER_MEMBER_USERS"        : "Dalībnieki (lietotāji)",
+        "SECTION_HEADER_MEMBER_USER_GROUPS"  : "Dalībnieki (grupas)",
+        "SECTION_HEADER_USER_GROUPS"         : "Vecākgrupas",
+
+        "TEXT_CONFIRM_DELETE" : "Pēc dzēšanas grupas nevar atjaunot. Vai tiešām vēlaties dzēst šo grupu?"
+
+    },
+
+    "PLAYER" : {
+
+        "ACTION_CLOSE"        : "Aizvērt",
+        "ACTION_SHOW_KEY_LOG" : "Taustiņu žurnāls",
+
+        "INFO_FRAME_EVENTS_LEGEND" : "Aktivitāte ekrānā",
+        "INFO_KEY_EVENTS_LEGEND"   : "Tastatūras aktivitāte",
+        "INFO_LOADING_RECORDING"   : "Jūsu ieraksts tiek ielādēts. Lūdzu, uzgaidiet...",
+        "INFO_NO_KEY_LOG"          : "Taustiņu žurnāls nav pieejams",
+        "INFO_NUMBER_OF_RESULTS"   : "{RESULTS} {RESULTS, plural, one{atbilstība} other{atbilstības}}",
+        "INFO_SEEK_IN_PROGRESS"    : "Notiek pāriešana uz pieprasīto pozīciju. Lūdzu, uzgaidiet..."
+
+    },
+
+    "SETTINGS" : {
+
+        "SECTION_HEADER_SETTINGS" : "Iestatījumi"
+
+    },
+
+    "SETTINGS_CONNECTION_HISTORY" : {
+
+        "HELP_CONNECTION_HISTORY" : "Iepriekšējo savienojumu vēstures ieraksti ir uzskaitīti šeit un tos var kārtot, noklikšķinot uz kolonnu virsrakstiem. Lai meklētu konkrētus ierakstus, ievadiet filtra virkni un noklikšķiniet uz \"Meklēt\". Tiks uzrādīti tikai tie ieraksti, kas atbilst norādītajai filtra virknei.",
+
+        "INFO_NO_HISTORY"                  : "Nav atbilstošu ierakstu",
+
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Savienojuma nosaukums",
+        "TABLE_HEADER_SESSION_DURATION"        : "Ilgums",
+        "TABLE_HEADER_SESSION_LOGS"            : "Žurnāli",
+        "TABLE_HEADER_SESSION_REMOTEHOST"      : "Attālinātais resursdators",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Sākuma laiks",
+        "TABLE_HEADER_SESSION_USERNAME"        : "Lietotājvārds"
+
+    },
+
+    "SETTINGS_CONNECTIONS" : {
+
+        "ACTION_NEW_CONNECTION"       : "Jauns savienojums",
+        "ACTION_NEW_CONNECTION_GROUP" : "Jauna grupa",
+        "ACTION_NEW_SHARING_PROFILE"  : "Jauns koplietošanas profils",
+
+        "HELP_CONNECTIONS"   : "Noklikšķiniet vai pieskarieties savienojumam zemāk, lai pārvaldītu šo savienojumu. Atkarībā no jūsu piekļuves līmeņa, savienojumus var pievienot un dzēst, kā arī mainīt to rekvizītus (protokolu, resursdatora nosaukumu, portu u.c.).",
+        
+
+        "SECTION_HEADER_CONNECTIONS"     : "Savienojumi"
+
+    },
+
+    "SETTINGS_PREFERENCES" : {
+
+        "FIELD_HEADER_LANGUAGE"                  : "Saskarnes valoda:",
+        "FIELD_HEADER_NUMBER_RECENT_CONNECTIONS" : "Rādāmo neseno savienojumu skaits:",
+        "FIELD_HEADER_PASSWORD"                  : "Parole:",
+        "FIELD_HEADER_PASSWORD_OLD"              : "Pašreizējā parole:",
+        "FIELD_HEADER_PASSWORD_NEW"              : "Jaunā parole:",
+        "FIELD_HEADER_PASSWORD_NEW_AGAIN"        : "Apstipriniet jauno paroli:",
+        "FIELD_HEADER_SHOW_RECENT_CONNECTIONS"   : "Rādīt nesenos savienojumus:",
+        "FIELD_HEADER_TIMEZONE"                  : "Laika josla:",
+        "FIELD_HEADER_USERNAME"                  : "Lietotājvārds:",
+        
+        "HELP_APPEARANCE"           : "Šeit varat ieslēgt vai izslēgt sadaļas \"Nesenie savienojumi\" rādīšanu sākumekrānā un pielāgot iekļauto neseno savienojumu skaitu.",
+        "HELP_DEFAULT_INPUT_METHOD" : "Noklusējuma ievades metode nosaka, kā Guacamole saņem tastatūras notikumus. Šī iestatījuma maiņa var būt nepieciešama, lietojot mobilo ierīci vai rakstot caur IME. Šo iestatījumu var pārrakstīt katram savienojumam atsevišķi Guacamole izvēlnē.",
+        "HELP_DEFAULT_MOUSE_MODE"   : "Noklusējuma peles emulācijas režīms nosaka, kā attālinātā pele uzvedīsies jaunajos savienojumos attiecībā pret pieskārieniem. Šo iestatījumu var pārrakstīt katram savienojumam atsevišķi Guacamole izvēlnē.",
+        "HELP_LOCALE"               : "Tālāk norādītās opcijas attiecas uz lietotāja lokalizāciju un ietekmēs, kā tiek attēlotas dažādas saskarnes daļas.",
+        "HELP_UPDATE_PASSWORD"      : "Ja vēlaties mainīt paroli, zemāk ievadiet pašreizējo paroli un vēlamo jauno paroli un klikšķiniet \"Atjaunot paroli\". Izmaiņas stāsies spēkā nekavējoties.",
+
+        "INFO_PASSWORD_CHANGED" : "Parole nomainīta.",
+        "INFO_PREFERENCE_ATTRIBUTES_CHANGED" : "Lietotāja iestatījumi saglabāti.",
+
+        "SECTION_HEADER_APPEARANCE"           : "Izskats",
+        "SECTION_HEADER_DEFAULT_INPUT_METHOD" : "Noklusējuma ievades metode",
+        "SECTION_HEADER_DEFAULT_MOUSE_MODE"   : "Noklusējuma peles emulācijas režīms",
+        "SECTION_HEADER_UPDATE_PASSWORD"      : "Mainīt paroli"
+
+    },
+
+    "SETTINGS_USERS" : {
+
+        "ACTION_NEW_USER"      : "Jauns lietotājs",
+
+        "HELP_USERS" : "Noklikšķiniet vai pieskarieties lietotājam zemāk, lai pārvaldītu šo lietotāju. Atkarībā no jūsu piekļuves līmeņa, lietotājus var pievienot un dzēst, kā arī mainīt viņu paroles.",
+
+        "SECTION_HEADER_USERS"       : "Lietotāji",
+
+        "TABLE_HEADER_FULL_NAME"   : "Pilns vārds",
+        "TABLE_HEADER_LAST_ACTIVE" : "Pēdējā aktivitāte",
+        "TABLE_HEADER_ORGANIZATION" : "Organizācija",
+        "TABLE_HEADER_USERNAME"    : "Lietotājvārds"
+
+    },
+
+    "SETTINGS_USER_GROUPS" : {
+
+        "ACTION_NEW_USER_GROUP" : "Jauna grupa",
+
+        "HELP_USER_GROUPS" : "Noklikšķiniet vai pieskarieties grupai zemāk, lai pārvaldītu šo grupu. Atkarībā no jūsu piekļuves līmeņa, grupas var pievienot un dzēst, kā arī mainīt to lietotājus un apakšgrupas.",
+
+        "SECTION_HEADER_USER_GROUPS" : "Grupas",
+
+        "TABLE_HEADER_USER_GROUP_NAME" : "Grupas nosaukums"
+
+    },
+
+    "SETTINGS_SESSIONS" : {
+        
+        "ACTION_DELETE"      : "Pārtraukt sesijas",
+        
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Pārtraukt sesijas",
+        
+        
+
+        "HELP_SESSIONS" : "Šajā lapā tiks parādīti pašlaik aktīvie savienojumi. Sarakstā iekļautie savienojumi un iespēja pārtraukt šos savienojumus ir atkarīga no jūsu piekļuves līmeņa. Ja vēlaties pārtraukt vienu vai vairākas sesijas, atzīmējiet izvēles rūtiņu blakus šīm sesijām un klikšķiniet \"Pārtraukt sesijas\". Sesijas pārtraukšana nekavējoties atvienos lietotāju no saistītā savienojuma.",
+        
+        "INFO_NO_SESSIONS" : "Nav aktīvu sesiju",
+
+        "SECTION_HEADER_SESSIONS" : "Aktīvās sesijas",
+        
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Savienojuma nosaukums",
+        "TABLE_HEADER_SESSION_REMOTEHOST"      : "Attālinātais resursdators",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Aktīvs kopš",
+        "TABLE_HEADER_SESSION_USERNAME"        : "Lietotājvārds",
+        
+        "TEXT_CONFIRM_DELETE" : "Vai tiešām vēlaties pārtraukt visas atlasītās sesijas? Lietotāji, kas izmanto šīs sesijas, tiks nekavējoties atvienoti."
+
+    }
+
+}
